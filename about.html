@@ -4,6 +4,8 @@
 <meta charset="utf-8"/>
 <title>About · Stockwell Media Co</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://gzcfawhglecmfxnwfjej.supabase.co; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"/>
+<meta name="referrer" content="strict-origin-when-cross-origin"/>
 <link rel="icon" href="assets/logos/favicon.svg"/>
 <link rel="stylesheet" href="styles.css"/>
 <link rel="stylesheet" href="site.css"/>
@@ -79,17 +81,17 @@
     </div>
     <div class="grid grid-3">
       <div class="feature">
-        <div class="ico"><span data-lucide="message-square-text"></span></div>
+        <div class="ico"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" data-lucide="message-square-text" aria-hidden="true" class="lucide lucide-message-square-text"><path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"></path><path d="M7 11h10"></path><path d="M7 15h6"></path><path d="M7 7h8"></path></svg></div>
         <h3>Plain English</h3>
         <p>No "funnels," no "synergy." We talk the way you'd talk to a neighbor, and the numbers are just as clear.</p>
       </div>
       <div class="feature">
-        <div class="ico"><span data-lucide="shield-check"></span></div>
+        <div class="ico"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" data-lucide="shield-check" aria-hidden="true" class="lucide lucide-shield-check"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg></div>
         <h3>Discretion by default</h3>
         <p>One point of contact, no rotating account team. NDAs and confidentiality are standard, and the higher the stakes, the quieter we work.</p>
       </div>
       <div class="feature">
-        <div class="ico"><span data-lucide="hand-coins"></span></div>
+        <div class="ico"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" data-lucide="hand-coins" aria-hidden="true" class="lucide lucide-hand-coins"><path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"></path><path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"></path><path d="m2 16 6 6"></path><circle cx="16" cy="9" r="2.9"></circle><circle cx="6" cy="5" r="3"></circle></svg></div>
         <h3>Skin in the game</h3>
         <p>Founding rates and a direct line to the person doing the work. We earn the next month by making this one count.</p>
       </div>
@@ -104,7 +106,7 @@
       <h2>Let's see if we're a fit.</h2>
       <p>No pressure and no slide deck, just a straight conversation about your business and whether we can help.</p>
       <div class="hero-ctas">
-        <a href="contact.html" class="btn btn-on-dark">Find what you can automate <span class="arr" data-lucide="arrow-right"></span></a>
+        <a href="contact.html" class="btn btn-on-dark">Find what you can automate <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" aria-hidden="true" class="lucide lucide-arrow-right arr"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a>
         <a href="contact.html?inquiry=private" class="btn btn-ghost-dark">Private inquiry</a>
       </div>
     </div>
@@ -144,13 +146,11 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 Stockwell Media Co</span>
+      <span>© 2026 Stockwell Media Co · <a href="privacy.html">Privacy</a></span>
       <span>We build the systems businesses run on.</span>
     </div>
   </div>
 </footer>
 
-<script src="https://unpkg.com/lucide@latest"></script>
-<script>lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });</script>
 </body>
 </html>

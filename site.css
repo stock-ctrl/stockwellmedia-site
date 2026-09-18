@@ -654,3 +654,14 @@ img { display: block; max-width: 100%; }
 .setup-price-amt { font-family: var(--font-display); font-weight: 600; font-size: 26px; color: var(--sw-cream); letter-spacing: -0.01em; margin-bottom: 14px; }
 .setup-panel--price p { font-size: 14px; line-height: 1.6; color: rgba(244,239,228,0.72); margin-bottom: 24px; }
 .setup-panel--price .btn { margin-top: auto; align-self: flex-start; }
+
+/* Legal pages (privacy) */
+.legal { max-width: 44em; }
+.legal h2 { font-family: var(--font-display); font-weight: 600; font-size: 22px; letter-spacing: -0.01em; color: var(--sw-forest); margin: 40px 0 12px; }
+.legal ul { margin: 0 0 18px 1.2em; }
+.legal li { font-size: 16.5px; line-height: 1.7; color: rgba(13,20,16,0.78); margin-bottom: 6px; }
+.legal a { color: var(--sw-forest); text-decoration: underline; text-decoration-color: var(--sw-sage-500, #5a8040); text-underline-offset: 3px; }
+.legal .legal-date { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(13,20,16,0.5); }
+.form-privacy { font-size: 12.5px; line-height: 1.55; color: rgba(13,20,16,0.55); margin-top: 10px; text-align: center; }
+.form-privacy a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.footer-bottom a { color: inherit; }

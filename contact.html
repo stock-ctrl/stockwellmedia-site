@@ -4,6 +4,8 @@
 <meta charset="utf-8"/>
 <title>Contact · Stockwell Media Co</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://gzcfawhglecmfxnwfjej.supabase.co; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"/>
+<meta name="referrer" content="strict-origin-when-cross-origin"/>
 <link rel="icon" href="assets/logos/favicon.svg"/>
 <link rel="stylesheet" href="styles.css"/>
 <link rel="stylesheet" href="site.css"/>
@@ -86,8 +88,9 @@
         <textarea id="msg" rows="4" placeholder="e.g. I run a fencing company and want instant quotes on my site…"></textarea>
       </div>
       <p id="form-error" role="alert" style="display:none;background:#fdecea;border:1px solid #f0c2bc;color:#8c2f22;border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.5;margin-bottom:14px;"></p>
-      <button type="submit" class="btn btn-primary" id="contact-submit" style="width:100%;justify-content:center;">Send it over <span class="arr" data-lucide="arrow-right"></span></button>
+      <button type="submit" class="btn btn-primary" id="contact-submit" style="width:100%;justify-content:center;">Send it over <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" aria-hidden="true" class="lucide lucide-arrow-right arr"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button>
       <p id="contact-fineprint" style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.02em;color:rgba(13,20,16,0.45);margin-top:14px;text-align:center;">Goes straight to us · We reply within one business day</p>
+      <p class="form-privacy">We use what you send only to reply to you, by email, phone, or text. Never sold, never added to a list. <a href="privacy.html">Privacy policy</a></p>
       <div class="direct-line">
         <span>Or reach us directly</span>
         <a href="tel:+18167972739">Call (816) 797-2739</a>
@@ -154,14 +157,12 @@
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© 2026 Stockwell Media Co</span>
+      <span>© 2026 Stockwell Media Co · <a href="privacy.html">Privacy</a></span>
       <span>We build the systems businesses run on.</span>
     </div>
   </div>
 </footer>
 
-<script src="https://unpkg.com/lucide@latest"></script>
-<script>lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });</script>
 <script>
   // The form posts to the stockwell-lead edge function, which stores the lead
   // and enqueues the iMessage alert to Stock.
@@ -207,7 +208,6 @@
           btn.innerHTML = label;
           errBox.textContent = err.message + ' Please call (816) 797-2739 or email stockwellmediaco@gmail.com.';
           errBox.style.display = 'block';
-          if (window.lucide) lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
         });
     });
   })();
@@ -226,9 +226,8 @@
     var need = document.getElementById('need');
     if (need) need.value = 'Private client services (confidential)';
     var btn = document.getElementById('contact-submit');
-    if (btn) btn.innerHTML = 'Request a private consultation <span class="arr" data-lucide="arrow-right"></span>';
+    if (btn) btn.innerHTML = 'Request a private consultation <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" data-lucide="arrow-right" aria-hidden="true" class="lucide lucide-arrow-right arr"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>';
     set('contact-fineprint', 'Held in confidence · NDA available on request');
-    if (window.lucide) lucide.createIcons({ attrs: { 'stroke-width': 1.75 } });
   })();
 </script>
 </body>

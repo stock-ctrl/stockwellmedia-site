@@ -7,7 +7,7 @@
 /* ── Type: Jost (workhorse), Spectral (editorial serif accent),
    JetBrains Mono (labels / status / spec). Loaded from Google Fonts.
    See README "Caveats" — swap to local TTFs when brand-approved files land. */
-@import url('https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=Spectral:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('fonts.css');
 
 :root {
   /* ---------- Brand color (canonical) ---------- */
