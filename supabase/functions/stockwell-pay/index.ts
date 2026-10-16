@@ -45,7 +45,6 @@ const EVENTS = [
   "checkout.session.async_payment_succeeded",
   "checkout.session.async_payment_failed",
   "invoice.payment_failed",
-  "invoice.paid",
 ];
 async function webhookSecret(create: boolean): Promise<string | null> {
   const name = "stripe_webhook_secret_" + MODE;
@@ -125,47 +124,73 @@ async function checkout(token: string) {
     payment_method_types: { 0: "us_bank_account", 1: "card" },
     payment_method_options: { us_bank_account: { verification_method: "automatic" } },
     billing_address_collection: "auto",
-    custom_text: { submit: { message: `${client} website agreement ${token}` } },
   };
-  let session, total;
-  if (pay.id === "monthly") {
-    total = cents(build.price);
-    session = await stripe("POST", "checkout/sessions", {
-      ...common,
-      mode: "subscription",
-      line_items: {
-        0: buildLine,
-        1: {
-          quantity: 1,
-          price_data: {
-            currency: "usd", unit_amount: cents(t.monthly), recurring: { interval: "month" },
-            product_data: { name: "Website monthly plan" },
-          },
-        },
-      },
-      subscription_data: {
-        trial_end: firstBillingDate(new Date(a.signed_at), t.launch_days),
-        trial_settings: { end_behavior: { missing_payment_method: "pause" } },
-        metadata: { token, client },
-        description: `${client} website monthly plan`,
-      },
-    });
-  } else {
-    total = cents(build.price) + cents(pay.price);
-    session = await stripe("POST", "checkout/sessions", {
-      ...common,
-      mode: "payment",
-      customer_creation: "always",
-      line_items: {
-        0: buildLine,
+  const monthly = pay.id === "monthly";
+  const start = firstBillingDate(new Date(a.signed_at), t.launch_days);
+  const startText = new Date(start * 1000).toLocaleDateString("en-US", { month: "long", day: "numeric", timeZone: "America/Chicago" });
+  // Build fee (plus prepay) is a one-time checkout. On the monthly plan the checkout also saves the payment method,
+  // and the webhook starts the $200/mo subscription from that saved method (see startMonthly).
+  const total = cents(build.price) + (monthly ? 0 : cents(pay.price));
+  const session = await stripe("POST", "checkout/sessions", {
+    ...common,
+    mode: "payment",
+    customer_creation: "always",
+    line_items: {
+      0: buildLine,
+      ...(monthly ? {} : {
         1: { quantity: 1, price_data: { currency: "usd", unit_amount: cents(pay.price), product_data: { name: `Website plan: ${pay.name}` } } },
+      }),
+    },
+    metadata: { token, ...(monthly ? { monthly_start: start } : {}) },
+    custom_text: {
+      submit: {
+        message: monthly
+          ? `Then ${usd(cents(t.monthly))} a month for the website plan, charged automatically on the 1st starting ${startText}. ${client} website agreement ${token}.`
+          : `${client} website agreement ${token}.`,
       },
-      payment_intent_data: { metadata: { token, client }, description: `${client} website build and ${pay.name}` },
-      invoice_creation: { enabled: true },
-    });
-  }
+    },
+    payment_intent_data: {
+      metadata: { token, client },
+      description: monthly ? `${client} website build` : `${client} website build and ${pay.name}`,
+      ...(monthly ? { setup_future_usage: "off_session" } : {}),
+    },
+    invoice_creation: { enabled: true },
+  });
   await sql`update stockwell.agreements set stripe_session = ${session.id}, pay_amount_cents = ${total} where token = ${token}`;
   return json({ status: "ok", url: session.url });
+}
+
+// Starts the monthly plan on the payment method saved at checkout. First charge lands on the 1st (billing anchor,
+// no proration); if Stripe won't take an anchor that far out, a trial ending on the same date does the same job.
+async function startMonthly(session: Record<string, any>, token: string) {
+  const [a] = await sql`select terms, business_name, stripe_subscription from stockwell.agreements where token = ${token}`;
+  if (a.stripe_subscription) return a.stripe_subscription;
+  const pi = await stripe("GET", "payment_intents/" + session.payment_intent);
+  const productKey = "stripe_monthly_product_" + MODE;
+  let [prod] = await sql`select value from stockwell.secrets where key = ${productKey}`;
+  if (!prod) {
+    const p = await stripe("POST", "products", { name: "Website monthly plan" });
+    await sql`insert into stockwell.secrets(key, value) values (${productKey}, ${p.id}) on conflict (key) do update set value = excluded.value`;
+    prod = { value: p.id };
+  }
+  const client = a.business_name || a.terms.client;
+  const base = {
+    customer: session.customer,
+    default_payment_method: pi.payment_method,
+    items: { 0: { price_data: { currency: "usd", product: prod.value, unit_amount: cents(a.terms.monthly), recurring: { interval: "month" } } } },
+    metadata: { token, client },
+    description: `${client} website monthly plan`,
+  };
+  const start = Number(session.metadata.monthly_start);
+  let sub;
+  try {
+    sub = await stripe("POST", "subscriptions", { ...base, billing_cycle_anchor: start, proration_behavior: "none" });
+  } catch (e) {
+    console.error("anchor rejected, using trial_end", e);
+    sub = await stripe("POST", "subscriptions", { ...base, trial_end: start });
+  }
+  await sql`update stockwell.agreements set stripe_subscription = ${sub.id} where token = ${token}`;
+  return sub.id;
 }
 
 async function webhook(req: Request, sigHeader: string) {
@@ -189,20 +214,21 @@ async function webhook(req: Request, sigHeader: string) {
     const paid = o.payment_status === "paid" || o.payment_status === "no_payment_required";
     await sql`update stockwell.agreements set pay_status = ${paid ? "paid" : "processing"},
               paid_at = ${paid ? new Date() : null}, stripe_customer = ${o.customer ?? null},
-              stripe_subscription = ${o.subscription ?? null}, stripe_session = ${o.id} where token = ${token}`;
-    await alert(paid ? `${a.label} paid ${amt}` : `${a.label} paid ${amt} by bank, clears in about 4 business days`, token);
+              stripe_session = ${o.id} where token = ${token}`;
+    let note = "";
+    if (o.metadata?.monthly_start) {
+      try { await startMonthly(o, token); note = ", monthly plan set up"; }
+      catch (e) { console.error(e); note = ", but the monthly plan did NOT start, set it up in Stripe"; }
+    }
+    await alert(paid ? `${a.label} paid ${amt}${note}` : `${a.label} paid ${amt} by bank, clears in about 4 business days${note}`, token);
   } else if (ev.type === "checkout.session.async_payment_succeeded") {
     await sql`update stockwell.agreements set pay_status = 'paid', paid_at = now() where token = ${token}`;
     await alert(`${a.label} bank payment of ${amt} cleared`, token);
   } else if (ev.type === "checkout.session.async_payment_failed") {
     await sql`update stockwell.agreements set pay_status = 'failed' where token = ${token}`;
+    const [f] = await sql`select stripe_subscription from stockwell.agreements where token = ${token}`;
+    if (f?.stripe_subscription) await stripe("DELETE", "subscriptions/" + f.stripe_subscription).catch(console.error);
     await alert(`${a.label} bank payment of ${amt} FAILED, check Stripe`, token);
-  } else if (ev.type === "invoice.paid") {
-    // first real charge on a monthly-plan signup that started as a pending bank payment
-    if (a.pay_status === "processing" && o.amount_paid > 0) {
-      await sql`update stockwell.agreements set pay_status = 'paid', paid_at = now() where token = ${token}`;
-      await alert(`${a.label} bank payment of ${usd(o.amount_paid)} cleared`, token);
-    }
   } else if (ev.type === "invoice.payment_failed") {
     await alert(`${a.label} monthly payment of ${amt} FAILED, check Stripe`, token);
   }
