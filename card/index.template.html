@@ -1,0 +1,257 @@
+<meta charset="utf-8">
+<title>Stock Curtis, Stockwell Media Co</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1b3221">
+<meta name="description" content="Stock Curtis, founder of Stockwell Media Co. We build the systems businesses run on: dashboards, daily briefs, and internal tools.">
+<meta property="og:title" content="Stock Curtis, Stockwell Media Co">
+<meta property="og:description" content="We build the systems businesses run on.">
+<meta property="og:type" content="profile">
+
+<style>
+@font-face{font-family:'Jost';src:url(data:font/woff2;base64,__JOST_B64__) format('woff2');font-weight:100 900;font-display:swap;}
+@font-face{font-family:'JBMono';src:url(data:font/woff2;base64,__MONO_B64__) format('woff2');font-weight:100 800;font-display:swap;}
+
+:root{
+  --forest:#1b3221; --forest-deep:#122016; --pine:#264a30;
+  --sage:#5a8040; --sage-deep:#466631; --sage-light:#a8c994;
+  --cream:#f4efe4; --cream-warm:#fdfaf2; --paper:#f6f0e3; --cream-deep:#ebe7dc;
+  --ink:#0d1410;
+  --muted:#5f6461; --soft:#6f746d; --rule:#d6d0c0; --border:#ded8c8;
+  --on-forest-muted:#bcbeb1; --on-forest-soft:#929a8c;
+}
+
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:'Jost',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-size:16px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit; text-decoration:none;}
+
+.wrap{max-width:460px; margin:0 auto; padding:22px 22px 40px;}
+
+/* ---------- hero ---------- */
+.hero{
+  position:relative; background:var(--forest); color:var(--cream);
+  border-radius:28px; padding:30px 26px 28px;
+}
+.lockup{display:flex; align-items:center; gap:12px;}
+.mark{width:58px; height:58px; display:block; flex:none;}
+.wordmark{display:flex; flex-direction:column; gap:8px; padding-top:1px;}
+.wm-main{
+  font-size:21px; font-weight:600; letter-spacing:0.16em;
+  text-transform:uppercase; color:var(--cream); line-height:1;
+}
+.wm-sub{
+  font-family:'JBMono',ui-monospace,monospace; font-size:8px; font-weight:500;
+  letter-spacing:0.58em; text-transform:uppercase; color:var(--sage-light); line-height:1;
+}
+.name{
+  font-size:37px; font-weight:600; letter-spacing:-0.025em; line-height:1.05;
+  margin:26px 0 0;
+}
+.role{
+  font-family:'JBMono',ui-monospace,monospace; font-size:11.5px; font-weight:500;
+  letter-spacing:0.17em; text-transform:uppercase; color:var(--sage-light);
+  margin:11px 0 0;
+}
+.tagline{
+  font-size:18px; line-height:1.45; color:var(--cream);
+  margin:20px 0 0; padding-top:20px; border-top:1px solid rgba(244,239,228,0.16);
+}
+.tagline b{font-weight:600;}
+
+/* ---------- actions ---------- */
+.actions{margin:30px 0 0;}
+.btn{
+  display:flex; align-items:center; justify-content:center; gap:9px;
+  font-family:'Jost',sans-serif; font-weight:500; font-size:16px; letter-spacing:-0.01em;
+  padding:16px 22px; border-radius:10px; border:1px solid transparent;
+  width:100%; -webkit-tap-highlight-color:transparent;
+}
+.btn:active{transform:translateY(1px);}
+.btn-primary{background:var(--forest); color:var(--cream);}
+.btn-primary svg{width:17px; height:17px; flex:none;}
+.row{display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin-top:9px;}
+.btn-wide{margin-top:9px; border-color:var(--sage); color:var(--forest);}
+.btn-ghost{
+  background:var(--cream-warm); color:var(--forest);
+  border-color:var(--border); font-size:15px; padding:14px 8px;
+}
+
+/* ---------- sections ---------- */
+.eyebrow{
+  font-family:'JBMono',monospace; font-size:11px; font-weight:500;
+  letter-spacing:0.18em; text-transform:uppercase; color:var(--sage-deep);
+  margin:44px 0 16px; padding-left:0.18em;
+}
+.item{padding:15px 0; border-top:1px solid var(--rule);}
+.item h3{font-size:17px; font-weight:600; letter-spacing:-0.015em; margin:0 0 3px;}
+.item p{font-size:15px; line-height:1.45; color:var(--muted); margin:0;}
+
+.trades{
+  background:var(--forest); border-radius:20px;
+  padding:24px 22px 26px; margin:44px 0 0;
+}
+.trades .eyebrow{color:var(--sage-light); margin:0 0 13px;}
+.trades .lead{color:var(--cream);}
+
+.proofs{
+  background:var(--cream-deep); border-radius:20px;
+  padding:4px 18px 14px; margin:44px -16px 0;
+}
+.proofs .eyebrow{margin:26px 0 14px;}
+
+.lead{
+  font-size:16.5px; line-height:1.55; color:var(--ink); margin:0;
+  padding:0 0 2px;
+}
+
+/* ---------- proof ---------- */
+.proof{border-top:1px solid var(--rule); padding:15px 0 0; margin-top:2px;}
+.proof .who{
+  font-family:'JBMono',monospace; font-size:11px; font-weight:500;
+  letter-spacing:0.13em; text-transform:uppercase; color:var(--sage-deep);
+  margin:0 0 5px;
+}
+.proof p{font-size:15px; line-height:1.5; color:var(--ink); margin:0 0 15px;}
+
+/* ---------- crumbl note ---------- */
+.note{
+  background:var(--cream-warm); border:1px solid var(--border);
+  border-left:3px solid var(--sage);
+  border-radius:12px; padding:18px 20px; margin:40px 0 0;
+}
+.note p{margin:0; font-size:15.5px; line-height:1.55; color:var(--ink);}
+.note p + p{margin-top:11px;}
+
+/* ---------- footer ---------- */
+.foot{margin:44px 0 0; padding-top:24px; border-top:1px solid var(--rule);}
+.foot .line{
+  font-family:'JBMono',monospace; font-size:13px; letter-spacing:0.02em;
+  color:var(--forest); margin:0 0 8px; display:block;
+}
+.foot .place{
+  font-family:'JBMono',monospace; font-size:11px; letter-spacing:0.15em;
+  text-transform:uppercase; color:var(--muted); margin:16px 0 0;
+}
+.foot .tag{font-size:14px; color:var(--muted); margin:14px 0 0;}
+
+@media (max-width:360px){
+  .name{font-size:33px;}
+  .btn-ghost{font-size:14px;}
+}
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="lockup">
+    <svg class="mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-label="Stockwell Media Co">
+      <ellipse cx="50" cy="76" rx="25" ry="6" fill="none" stroke="#f4efe4" stroke-width="4.6"></ellipse>
+      <ellipse cx="50" cy="76" rx="8" ry="2.5" fill="#a8c994"></ellipse>
+      <rect x="47" y="28" width="6" height="46" rx="2" fill="#f4efe4"></rect>
+      <line x1="50" y1="30" x2="28" y2="76" stroke="#a8c994" stroke-width="2.9" stroke-linecap="round"></line>
+      <line x1="50" y1="30" x2="39" y2="76" stroke="#a8c994" stroke-width="2.9" stroke-linecap="round"></line>
+      <line x1="50" y1="30" x2="61" y2="76" stroke="#a8c994" stroke-width="2.9" stroke-linecap="round"></line>
+      <line x1="50" y1="30" x2="72" y2="76" stroke="#a8c994" stroke-width="2.9" stroke-linecap="round"></line>
+    </svg>
+      <div class="wordmark">
+        <span class="wm-main">Stockwell</span>
+        <span class="wm-sub">Media Co</span>
+      </div>
+    </div>
+
+    <h1 class="name">Stock Curtis</h1>
+    <p class="role">Founder</p>
+
+    <p class="tagline">We build the <b>systems businesses run on.</b> Anywhere from dashboards and daily briefs to custom tools, for owners and contractors who want more jobs and less paperwork.</p>
+  </header>
+
+  <div class="actions">
+    <a class="btn btn-primary" href="contact.vcf">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M19 8v6M22 11h-6"></path>
+      </svg>
+      Save my contact
+    </a>
+    <div class="row">
+      <a class="btn btn-ghost" data-act="tel" href="contact.vcf">Call</a>
+      <a class="btn btn-ghost" data-act="sms" href="contact.vcf">Text</a>
+      <a class="btn btn-ghost" href="mailto:stock@stockwellmedia.com">Email</a>
+    </div>
+    <a class="btn btn-ghost btn-wide" href="https://stockwellmedia.com">See what we do</a>
+  </div>
+  <p class="eyebrow">What I build</p>
+
+  <div class="item">
+    <h3>Dashboards</h3>
+    <p>Sales, labor, inventory, and calendar on one screen. No more pulling reports.</p>
+  </div>
+  <div class="item">
+    <h3>Internal tools</h3>
+    <p>The spreadsheet everyone hates, rebuilt as software that does the math for you.</p>
+  </div>
+  <div class="item">
+    <h3>Daily briefs</h3>
+    <p>A text every morning with what happened yesterday and what needs done today. Built from your email, calendar, and numbers.</p>
+  </div>
+  <div class="item">
+    <h3>Websites</h3>
+    <p>Sites that actually do something, connected to the systems behind them.</p>
+  </div>
+
+  <section class="trades">
+  <p class="eyebrow">In the trades</p>
+
+  <p class="lead">If you run a trades company, I build custom tools around how you already work. It turns a business that has never been technical into one that runs like a machine.</p>
+  </section>
+
+  <section class="proofs">
+  <p class="eyebrow">Running right now</p>
+
+  <div class="proof">
+    <p class="who">Cookie franchise</p>
+    <p>A dashboard for ordering, sales forecasting, profitability management, email, and calendar.</p>
+  </div>
+  <div class="proof">
+    <p class="who">Recovery club</p>
+    <p>Client acquisition, client outreach workflows, and tech consulting.</p>
+  </div>
+  <div class="proof">
+    <p class="who">Staffing office</p>
+    <p>One dashboard across multiple offices, so the owners can actually read their stores and pull a report in one click.</p>
+  </div>
+  </section>
+
+  <div class="note">
+    <p>I own and operate a Crumbl Cookies franchise here locally, so payroll, scheduling, and inventory headaches are mine too.</p>
+    <p>Stockwell is the part I am most passionate about. The systems I sell are the same ones that optimize and streamline my own business, and I want to do the same for yours.</p>
+  </div>
+  <footer class="foot">
+    <a class="line" href="mailto:stock@stockwellmedia.com">stock@stockwellmedia.com</a>
+    <a class="line" data-act="tel" href="contact.vcf">Tap to call</a>
+    <p class="place">Springfield, Missouri</p>
+    <p class="tag">Nice to meet you. Text me and I will remember what we talked about.</p>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  var n = "+1" + [816, 797, 2739].join("");
+  // iOS wants & before body, everything else wants ?
+  var ios = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  var body = encodeURIComponent("Hi Stock, my name is ");
+  document.querySelectorAll("[data-act]").forEach(function(el){
+    el.setAttribute("href", el.dataset.act === "sms"
+      ? "sms:" + n + (ios ? "&" : "?") + "body=" + body
+      : "tel:" + n);
+  });
+})();
+</script>
