@@ -77,6 +77,16 @@ input.t:focus { outline: 3px solid rgba(90,128,64,.35); border-color: var(--sage
 .center { text-align: center; padding: 60px 0; color: var(--muted); }
 .actions { display: flex; gap: 12px; margin-top: 22px; }
 .actions .btn { flex: 1; }
+.pay { margin: 4px 0 30px; padding: 20px 20px 18px; background: #f2f6ec; border: 1px solid var(--sage-light); border-radius: 12px; }
+.pay h3 { font: 600 22px/1.2 Jost; color: var(--forest); margin: 2px 0 12px; }
+.pay .lbl { margin-top: 0; }
+.pay .row { display: flex; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px solid rgba(13,20,16,.1); }
+.pay .row span:last-child { font-family: "JetBrains Mono", monospace; color: var(--forest); white-space: nowrap; }
+.pay .row.total { border-bottom: 0; font-weight: 600; }
+.pay .then { color: var(--muted); font-size: 15px; margin: 6px 0 16px; }
+.pay .how { color: var(--muted); font-size: 14px; margin: 12px 0 0; text-align: center; }
+.pay.done h3 { margin-bottom: 4px; }
+.pay.done p { color: var(--muted); margin: 0; }
 .test { background: #fdf1c7; color: #6a5300; font: 400 12px "JetBrains Mono", monospace; letter-spacing: .1em; text-transform: uppercase; text-align: center; padding: 8px; }
 
 @media (max-width: 640px) {
@@ -196,11 +206,59 @@ ${optRows(t.pay, "pay", choices.pay, signed)}
     app.innerHTML = `<div class="center"><h1>This link isn't active</h1><p>Text Stock at 816.797.2739 and he'll send you a fresh one.</p></div>`;
   }
 
+  const FN = "https://souugetwznrxjtlasdtb.supabase.co/functions/v1/stockwell-pay";
+  // 1st of the month after signed_at + launch_days (stockwell-pay bills the monthly plan from this date)
+  function firstBill(signedAt, days) {
+    const d = new Date(new Date(signedAt).getTime() + (days || 14) * 864e5);
+    return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1, 15));
+  }
+  const justPaid = new URLSearchParams(location.search).get("paid") === "1";
+  let polls = 0;
+
+  function payBox(d) {
+    const s = d.signed, t = d.terms;
+    const build = t.build.find(b => b.id === s.choices.build), pay = t.pay.find(p => p.id === s.choices.pay);
+    if (!build || !pay) return "";
+    if (d.pay_status === "paid") return `<div class="pay done no-print"><h3>Paid. Thank you!</h3><p>You're all set. We'll send your preview link soon.</p></div>`;
+    if (d.pay_status === "processing") return `<div class="pay done no-print"><h3>Payment received</h3><p>Bank payments take about 4 business days to clear. Nothing else to do.</p></div>`;
+    if (justPaid && polls < 6) return `<div class="pay done no-print"><h3>Payment received</h3><p>Confirming with the bank…</p></div>`;
+    const num = v => Number(String(v).replace(/[^0-9.]/g, ""));
+    const monthly = pay.id === "monthly";
+    const total = num(build.price) + (monthly ? 0 : num(pay.price));
+    const rows = `<div class="row"><span>${esc(build.name)}</span><span>${money(num(build.price))}</span></div>`
+      + (monthly ? "" : `<div class="row"><span>${esc(pay.name)}</span><span>${money(num(pay.price))}</span></div>`)
+      + `<div class="row total"><span>Due today</span><span>${money(total)}</span></div>`;
+    const then = monthly
+      ? `<p class="then">Then ${money(t.monthly)} a month, paid automatically on the 1st, starting ${esc(fmtDate(firstBill(s.signed_at, t.launch_days)))}.</p>`
+      : `<p class="then">Covers your build and ${parseInt(pay.id, 10) || ""} months of the monthly plan, counted from launch.</p>`;
+    return `<div class="pay no-print" id="paybox"><div class="lbl">Last step</div><h3>Pay to get started</h3>${rows}${then}
+<button class="btn" id="paynow">Pay now</button><p class="err" id="payerr" role="alert"></p>
+<p class="how">Pay by bank, card, or Apple Pay on a secure checkout page. Paying by bank is preferred.</p></div>`;
+  }
+
+  function wirePay() {
+    const b = document.getElementById("paynow");
+    if (!b) return;
+    b.onclick = async () => {
+      b.disabled = true; b.textContent = "Opening checkout…"; document.getElementById("payerr").textContent = "";
+      try {
+        const r = await fetch(FN, { method: "POST", headers: { "Content-Type": "application/json", apikey: KEY, Authorization: "Bearer " + KEY }, body: JSON.stringify({ token }) });
+        const d = await r.json();
+        if (d.url) { location.href = d.url; return; }
+        if (d.status === "paid" || d.status === "processing") return load();
+        throw new Error(d.status);
+      } catch (e) {
+        b.disabled = false; b.textContent = "Pay now";
+        document.getElementById("payerr").textContent = "Checkout didn't open. Check your connection and try again, or text Stock at 816.797.2739.";
+      }
+    };
+  }
+
   function renderSigned(d) {
     const s = d.signed, t = d.terms;
     document.title = "Signed agreement · Stockwell Media Co";
     app.innerHTML = `<div class="signed-view">
-<span class="stamp">Signed ${esc(fmtTime(s.signed_at))}</span>
+${payBox(d)}<span class="stamp">Signed ${esc(fmtTime(s.signed_at))}</span>
 ${agreementHTML(t, s.choices, true)}
 <div class="sigwrap"><div class="sides">
 ${stockwellSide(d.issued)}
@@ -215,6 +273,9 @@ ${stockwellSide(d.issued)}
 <div class="actions"><button class="btn" id="print">Save a copy (PDF)</button></div>
 </div>`;
     document.getElementById("print").onclick = () => window.print();
+    wirePay();
+    // back from checkout before the webhook landed: re-check a few times
+    if (justPaid && !d.pay_status && polls < 6) { polls++; setTimeout(load, 2500); }
   }
 
   function renderOpen(d) {
