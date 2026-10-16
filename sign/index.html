@@ -213,12 +213,20 @@ ${optRows(t.pay, "pay", choices.pay, signed)}
     return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1, 15));
   }
   const justPaid = new URLSearchParams(location.search).get("paid") === "1";
+  const justUpdated = new URLSearchParams(location.search).get("updated") === "1";
   let polls = 0;
 
   function payBox(d) {
     const s = d.signed, t = d.terms;
     const build = t.build.find(b => b.id === s.choices.build), pay = t.pay.find(p => p.id === s.choices.pay);
     if (!build || !pay) return "";
+    if (d.pay_status === "past_due") {
+      if (justUpdated) return `<div class="pay done no-print"><h3>Thanks, we got your new payment method</h3><p>We're retrying the payment now. This page will update once it goes through.</p></div>`;
+      return `<div class="pay no-print" id="paybox"><div class="lbl">Action needed</div><h3>Your monthly payment didn't go through</h3>
+<p class="then">Your card or bank declined the ${money(t.monthly)} website plan payment. Update your payment method and we'll retry it right away.</p>
+<button class="btn" id="paynow" data-action="update_payment">Update payment method</button><p class="err" id="payerr" role="alert"></p>
+<p class="how">Card, bank, or Apple Pay on a secure page. Questions? Text Stock at 816.797.2739.</p></div>`;
+    }
     if (d.pay_status === "paid") return `<div class="pay done no-print"><h3>Paid. Thank you!</h3><p>You're all set. We'll send your preview link soon.</p></div>`;
     if (d.pay_status === "processing") return `<div class="pay done no-print"><h3>Payment received</h3><p>Bank payments take about 4 business days to clear. Nothing else to do.</p></div>`;
     if (justPaid && polls < 6) return `<div class="pay done no-print"><h3>Payment received</h3><p>Confirming with the bank…</p></div>`;
@@ -230,7 +238,7 @@ ${optRows(t.pay, "pay", choices.pay, signed)}
       + `<div class="row total"><span>Due today</span><span>${money(total)}</span></div>`;
     const then = monthly
       ? `<p class="then">Then ${money(t.monthly)} a month, paid automatically on the 1st, starting ${esc(fmtDate(firstBill(s.signed_at, t.launch_days)))}.</p>`
-      : `<p class="then">Covers your build and ${parseInt(pay.id, 10) || ""} months of the monthly plan, counted from launch.</p>`;
+      : `<p class="then">Covers your build and ${parseInt(pay.id, 10) || ""} months of the monthly plan. After that it's $${t.monthly} a month on the same card or bank account, unless you cancel or prepay again.</p>`;
     return `<div class="pay no-print" id="paybox"><div class="lbl">Last step</div><h3>Pay to get started</h3>${rows}${then}
 <button class="btn" id="paynow">Pay now</button><p class="err" id="payerr" role="alert"></p>
 <p class="how">Pay by bank, card, or Apple Pay on a secure checkout page. Paying by bank is preferred.</p></div>`;
@@ -240,15 +248,17 @@ ${optRows(t.pay, "pay", choices.pay, signed)}
     const b = document.getElementById("paynow");
     if (!b) return;
     b.onclick = async () => {
-      b.disabled = true; b.textContent = "Opening checkout…"; document.getElementById("payerr").textContent = "";
+      const action = b.dataset.action, label = b.textContent;
+      b.disabled = true; b.textContent = "Opening secure page…"; document.getElementById("payerr").textContent = "";
       try {
-        const r = await fetch(FN, { method: "POST", headers: { "Content-Type": "application/json", apikey: KEY, Authorization: "Bearer " + KEY }, body: JSON.stringify({ token }) });
+        const r = await fetch(FN, { method: "POST", headers: { "Content-Type": "application/json", apikey: KEY, Authorization: "Bearer " + KEY }, body: JSON.stringify(action ? { token, action } : { token }) });
         const d = await r.json();
         if (d.url) { location.href = d.url; return; }
         if (d.status === "paid" || d.status === "processing") return load();
+        if (d.status === "canceled") { b.disabled = false; b.textContent = label; document.getElementById("payerr").textContent = "Your plan needs to be restarted by us. Text Stock at 816.797.2739 and he'll sort it out."; return; }
         throw new Error(d.status);
       } catch (e) {
-        b.disabled = false; b.textContent = "Pay now";
+        b.disabled = false; b.textContent = label;
         document.getElementById("payerr").textContent = "Checkout didn't open. Check your connection and try again, or text Stock at 816.797.2739.";
       }
     };
@@ -275,7 +285,7 @@ ${stockwellSide(d.issued)}
     document.getElementById("print").onclick = () => window.print();
     wirePay();
     // back from checkout before the webhook landed: re-check a few times
-    if (justPaid && !d.pay_status && polls < 6) { polls++; setTimeout(load, 2500); }
+    if (((justPaid && !d.pay_status) || (justUpdated && d.pay_status === "past_due")) && polls < 6) { polls++; setTimeout(load, 2500); }
   }
 
   function renderOpen(d) {
