@@ -175,9 +175,15 @@ async function webhook(req: Request, sigHeader: string) {
   const ev = JSON.parse(raw), o = ev.data.object;
   const token: string | undefined = o.metadata?.token || o.client_reference_id || o.subscription_details?.metadata?.token;
   if (!token) return json({ ok: true, skipped: true });
-  const [a] = await sql`select label, pay_status from stockwell.agreements where token = ${token}`;
+  const [a] = await sql`select label, pay_status, pay_amount_cents from stockwell.agreements where token = ${token}`;
   if (!a) return json({ ok: true, skipped: true });
+  // belt and braces: re-read checkout sessions straight from Stripe instead of trusting the event body
+  if (ev.type.startsWith("checkout.session.")) Object.assign(o, await stripe("GET", "checkout/sessions/" + o.id));
   const amt = usd(o.amount_total ?? o.amount_due ?? 0);
+  if (ev.type.startsWith("checkout.session.") && a.pay_amount_cents && o.amount_total !== a.pay_amount_cents) {
+    await alert(`${a.label} checkout total ${amt} does not match the agreement, check Stripe`, token);
+    return json({ ok: true, mismatch: true });
+  }
 
   if (ev.type === "checkout.session.completed") {
     const paid = o.payment_status === "paid" || o.payment_status === "no_payment_required";
