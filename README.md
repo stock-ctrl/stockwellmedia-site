@@ -27,7 +27,10 @@ Backend source lives in `stock-ctrl/stockwell-media` under `supabase/`.
 
 ## Related
 
-- `stock-ctrl/card` — the NFC business card, links here via "See the work"
+- `card/` — the NFC business card, served at stockwellmedia.com/card/. Edit
+  `card/index.template.html`, then `python3 card/build.py` (never edit `card/index.html`).
+  `stock-ctrl/card` now only forwards the old stock-ctrl.github.io/card/ address
+  (what the NFC tags open) here, and keeps the Flipper tooling.
 - `stock-ctrl/stockwell-media` — digital business card, email signature, avatar,
   the Supabase backend, and the WIP trades estimator (`website/trades-demo.html`)
 
