@@ -437,7 +437,7 @@ img { display: block; max-width: 100%; }
 .pcs-caps { margin-top: 8px; }
 .pcs-cap { display: grid; grid-template-columns: 56px 1fr 1.1fr; gap: 28px; align-items: start; padding: 30px 0; border-bottom: 1px solid rgba(233,228,214,0.12); }
 @media (max-width: 760px){ .pcs-cap { grid-template-columns: 1fr; gap: 10px; } }
-.pcs-cap .no { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; color: rgba(168,201,148,0.6); padding-top: 5px; }
+.pcs-cap .no { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; color: rgba(168,201,148,0.75); padding-top: 5px; }
 .pcs-cap h3 { font-family: var(--font-serif); font-weight: 500; font-size: 22px; line-height: 1.2; letter-spacing: -0.005em; color: #f4efe4; }
 .pcs-cap p { font-size: 14.5px; line-height: 1.68; color: rgba(233,228,214,0.64); }
 
